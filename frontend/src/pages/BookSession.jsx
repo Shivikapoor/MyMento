@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config/api";
 import { getToken, getUser } from "../utils/auth";
 import PageWrapper from "../components/PageWrapper";
 import "../App.css";
@@ -52,7 +53,7 @@ function BookSession() {
     if (!formData.date) return;
 
     fetch(
-      `http://localhost:5000/api/appointments/booked-slots?date=${formData.date}`,
+      `${API_URL}/api/appointments/booked-slots?date=${formData.date}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -77,7 +78,7 @@ function BookSession() {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/appointments", {
+      const res = await fetch(`${API_URL}/api/appointments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

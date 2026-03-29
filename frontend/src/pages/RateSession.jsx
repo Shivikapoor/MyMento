@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config/api";
 import { getToken } from "../utils/auth";
 import PageWrapper from "../components/PageWrapper";
 import "../App.css";
@@ -22,7 +23,7 @@ function RateSession() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/ratings", {
+      const res = await fetch(`${API_URL}/api/ratings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

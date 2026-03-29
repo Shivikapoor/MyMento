@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getToken } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config/api";
 
 function ClientHistory() {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ function ClientHistory() {
 
   const fetchAppointments = async () => {
     const res = await fetch(
-      "http://localhost:5000/api/appointments/my",
+      `${API_URL}/api/appointments/my`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

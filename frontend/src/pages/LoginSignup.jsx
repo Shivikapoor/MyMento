@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config/api";
 import { setAuth } from "../utils/auth";
 import "../App.css";
 
 const OTP_RESEND_SECONDS = 60;
-const API_BASE_URL = "http://localhost:5000";
 
 async function readApiResponse(res) {
   const contentType = res.headers.get("content-type") || "";
@@ -18,7 +18,7 @@ async function readApiResponse(res) {
   if (!res.ok && text.includes("<!DOCTYPE")) {
     return {
       message:
-        "API route not found. Please make sure the backend server is restarted and running on http://localhost:5000.",
+        `API route not found. Please make sure the backend server is running on ${API_URL}.`,
     };
   }
 
@@ -101,8 +101,8 @@ function LoginSignup({ initialMode = "login" }) {
 
     try {
       const endpoint = isLogin
-        ? `${API_BASE_URL}/api/auth/login`
-        : `${API_BASE_URL}/api/auth/signup`;
+        ? `${API_URL}/api/auth/login`
+        : `${API_URL}/api/auth/signup`;
 
       const payload = isLogin
         ? { email: formData.email, password: formData.password }
@@ -133,7 +133,7 @@ function LoginSignup({ initialMode = "login" }) {
   };
 
   const sendOtpRequest = async (email) => {
-    const res = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+    const res = await fetch(`${API_URL}/api/auth/send-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
@@ -173,7 +173,7 @@ function LoginSignup({ initialMode = "login" }) {
     setForgotMessage("");
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
+      const res = await fetch(`${API_URL}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -204,7 +204,7 @@ function LoginSignup({ initialMode = "login" }) {
     setForgotMessage("");
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
+      const res = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(forgotData),

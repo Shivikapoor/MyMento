@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getToken, getUser } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config/api";
 import "../App.css";
 
 function Admin() {
@@ -21,11 +22,11 @@ function Admin() {
   }, []);
 
   const fetchData = async () => {
-    const usersRes = await fetch("http://localhost:5000/api/admin/users", {
+    const usersRes = await fetch(`${API_URL}/api/admin/users`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    const apptRes = await fetch("http://localhost:5000/api/admin/appointments", {
+    const apptRes = await fetch(`${API_URL}/api/admin/appointments`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getToken, getUser, logout } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config/api";
 import "../App.css";
 
 function CounsellorDashboard() {
@@ -12,7 +13,7 @@ function CounsellorDashboard() {
 
   const fetchAppointments = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/appointments", {
+      const res = await fetch(`${API_URL}/api/appointments`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -46,7 +47,7 @@ function CounsellorDashboard() {
     if (!window.confirm("Delete this appointment?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/appointments/${id}`, {
+      const res = await fetch(`${API_URL}/api/appointments/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -65,7 +66,7 @@ function CounsellorDashboard() {
 
   const handleConfirm = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/appointments/${id}`, {
+      const res = await fetch(`${API_URL}/api/appointments/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

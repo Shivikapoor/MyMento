@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
+import { SOCKET_URL } from "../config/api";
 import PageWrapper from "../components/PageWrapper";
 import "../App.css";
-
-const SOCKET_URL = "http://localhost:5000";
 
 function TalkSpace() {
   const navigate = useNavigate();

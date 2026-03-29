@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL, UPLOADS_BASE_URL } from "../config/api";
 import { getToken, getUser } from "../utils/auth";
 import PageWrapper from "../components/PageWrapper";
 import "../App.css";
@@ -13,7 +14,7 @@ function CounsellorProfile() {
   const [certificateImage, setCertificateImage] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/profile")
+    fetch(`${API_URL}/api/profile`)
       .then((res) => res.json())
       .then((data) => setProfile(data));
   }, []);
@@ -44,7 +45,7 @@ function CounsellorProfile() {
       formData.append("certificateImage", certificateImage);
     }
 
-    await fetch("http://localhost:5000/api/profile", {
+    await fetch(`${API_URL}/api/profile`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -116,7 +117,7 @@ function CounsellorProfile() {
                     <div key={index} style={{ marginBottom: "15px" }}>
                       <p>{cert.title}</p>
                       <img
-                        src={`http://localhost:5000/uploads/${cert.image}`}
+                        src={`${UPLOADS_BASE_URL}/uploads/${cert.image}`}
                         alt="certificate"
                         style={{
                           width: "100%",

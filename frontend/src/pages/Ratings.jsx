@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { getToken } from "../utils/auth";
 import PageWrapper from "../components/PageWrapper";
+import { API_URL } from "../config/api";
 
 function Ratings() {
   const token = getToken();
   const [ratings, setRatings] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/ratings", {
+    fetch(`${API_URL}/api/ratings`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

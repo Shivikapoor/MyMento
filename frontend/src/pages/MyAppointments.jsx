@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getToken } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config/api";
 import "../App.css";
 
 function MyAppointments() {
@@ -21,7 +22,7 @@ function MyAppointments() {
   const fetchAppointments = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/appointments/my",
+        `${API_URL}/api/appointments/my`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
