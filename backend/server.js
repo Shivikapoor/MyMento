@@ -29,9 +29,25 @@ const allowedOrigins = [
     : []),
 ].filter(Boolean);
 
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+
+  try {
+    const hostname = new URL(origin).hostname;
+    if (hostname.endsWith(".vercel.app")) {
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
+
+  return false;
+}
+
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
 
@@ -48,6 +64,30 @@ const io = new Server(server, {
 });
 
 /* ================= MIDDLEWARES ================= */
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (isAllowedOrigin(origin)) {
+    res.header("Access-Control-Allow-Origin", origin || "*");
+    res.header("Vary", "Origin");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    );
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS"
+    );
+  }
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  return next();
+});
 
 app.use(cors(corsOptions));
 
@@ -79,6 +119,14 @@ app.use("/api/profile", counsellorProfileRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/ratings", ratingRoutes);
 app.use("/api", wellnessRoutes);
+
+app.use((error, req, res, next) => {
+  if (error?.message?.includes("CORS blocked")) {
+    return res.status(403).json({ message: error.message });
+  }
+
+  return next(error);
+});
 
 /* ================= SOCKET ================= */
 
