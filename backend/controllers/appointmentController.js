@@ -47,7 +47,7 @@ exports.createAppointment = async (req, res) => {
     // 📧 EMAIL TO COUNSELLOR (background)
     sendEmail(
       "hrishabhadhikari@gmail.com",
-      "New Session Booking - Life Mentor",
+      "New Session Booking - MyMento",
       `A new counselling session has been booked.
 
 Client Name: ${clientName}
@@ -123,7 +123,7 @@ exports.updateAppointmentStatus = async (req, res) => {
 Date: ${appointment.date}
 Time: ${appointment.time}
 
-Thank you for choosing Life Mentor ❤️`
+Thank you for choosing MyMento ❤️`
       ).catch((err) => {
         console.error("EMAIL ERROR:", err);
       });

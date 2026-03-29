@@ -116,7 +116,10 @@ function BookSession() {
   return (
     <PageWrapper>
       <div className="container">
-        <h1>Life Mentor</h1>
+        <h1 className="brand-title">
+          <img src="/images/Logo.png" alt="MyMento logo" className="brand-logo brand-logo-title" />
+          <span>MyMento</span>
+        </h1>
 
         <p className="welcome">
           Welcome, <strong>{user?.name}</strong>

@@ -1,168 +1,132 @@
 import { useEffect, useState } from "react";
-import { getToken, getUser, logout } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
-import "../App.css";
+import PageWrapper from "../components/PageWrapper";
+import DashboardNavbar from "../components/DashboardNavbar";
+import DreamProgressCard from "../components/DreamProgressCard";
+import MoodThisWeekCard from "../components/MoodThisWeekCard";
+import ScheduleProgressCard from "../components/ScheduleProgressCard";
+import WeeklyInsightCard from "../components/WeeklyInsightCard";
+import {
+  fetchDreamProgress,
+  fetchInsight,
+  fetchTaskStats,
+  fetchWeeklyMood,
+} from "../services/wellnessService";
+import { getToken, getUser } from "../utils/auth";
+import "../styles/mentalHealth.css";
 
 function Dashboard() {
   const navigate = useNavigate();
   const token = getToken();
   const user = getUser();
 
-  const [appointments, setAppointments] = useState([]);
- 
+  const [moodData, setMoodData] = useState([]);
+  const [taskStats, setTaskStats] = useState(null);
+  const [dreamProgress, setDreamProgress] = useState(null);
+  const [insight, setInsight] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // ✅ Fetch Appointments
-  const fetchAppointments = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/appointments", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.status === 401 || res.status === 403) {
-        logout();
-        navigate("/login");
-        return;
-      }
-
-      const data = await res.json();
-      setAppointments(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching appointments", error);
-      setLoading(false);
-    }
-  };
-
-  
-
-  // ✅ Role Protection + Initial Fetch
   useEffect(() => {
-    if (!token || user?.role !== "counsellor") {
+    if (!token) {
       navigate("/login");
       return;
     }
 
-    fetchAppointments();
-    
-  }, [token, user, navigate]);
-
-  // ✅ Delete Appointment
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this appointment?")) return;
-
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/appointments/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (res.ok) {
-        fetchAppointments();
-      } else {
-        alert("Delete failed");
-      }
-    } catch (error) {
-      console.error("Delete error", error);
+    if (user?.role === "counsellor") {
+      navigate("/counsellor-dashboard");
+      return;
     }
-  };
 
-  // ✅ Confirm Appointment
-  const handleConfirm = async (id) => {
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/appointments/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status: "Confirmed" }),
-        }
-      );
+    const loadDashboard = async () => {
+      try {
+        const [moodRes, taskRes, dreamRes, insightRes] = await Promise.all([
+          fetchWeeklyMood(),
+          fetchTaskStats(),
+          fetchDreamProgress(),
+          fetchInsight(),
+        ]);
 
-      if (res.ok) {
-        fetchAppointments();
-      } else {
-        alert("Update failed");
+        setMoodData(moodRes);
+        setTaskStats(taskRes);
+        setDreamProgress(dreamRes);
+        setInsight(insightRes);
+      } catch (err) {
+        setError(err.response?.data?.message || "Unable to load dashboard.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Update error", error);
-    }
-  };
+    };
 
-  
+    loadDashboard();
+  }, [navigate, token, user?.role]);
 
-  if (loading)
-    return (
-      <div className="container">
-        <h2>Loading...</h2>
-      </div>
-    );
+  if (loading) {
+    return <div className="mental-loading">Loading your dashboard...</div>;
+  }
 
   return (
-    <div className="container">
-      <h1>Appointments Dashboard</h1>
+    <PageWrapper>
+      <div className="mental-layout">
+        <DashboardNavbar />
 
-      {appointments.length === 0 ? (
-        <p>No appointments yet.</p>
-      ) : (
-        <div className="dashboard-list">
-          {appointments.map((appt) => (
-            <div key={appt._id} className="dashboard-card">
-              <h3>{appt.clientName}</h3>
-              <p>Email: {appt.clientEmail}</p>
-              <p>Date: {appt.date}</p>
-              <p>Time: {appt.time}</p>
-
+        <main className="mental-page-shell">
+          <section className="mental-welcome-card">
+            <div>
+              <span className="section-tag">Welcome back</span>
+              <h1>{user?.name}'s wellness dashboard</h1>
               <p>
-                Status:{" "}
-                <strong
-                  style={{
-                    color:
-                      appt.status === "Confirmed"
-                        ? "#4caf50"
-                        : "#ffa500",
-                  }}
-                >
-                  {appt.status}
-                </strong>
+                Track how you feel, monitor routine progress, and get weekly
+                guidance based on your real activity.
               </p>
+            </div>
 
-              <div className="dashboard-actions">
-                {appt.status === "Pending" && (
-                  <button
-                    className="confirm-btn"
-                    onClick={() => handleConfirm(appt._id)}
-                  >
-                    Confirm
-                  </button>
-                )}
-
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDelete(appt._id)}
-                >
-                  Delete
-                </button>
+            <div className="welcome-metrics">
+              <div>
+                <strong>{taskStats?.scheduleProgress || 0}%</strong>
+                <span>Schedule progress</span>
+              </div>
+              <div>
+                <strong>{dreamProgress?.progress || 0}%</strong>
+                <span>Dream progress</span>
+              </div>
+              <div>
+                <strong>{insight?.moodAverage ?? 0}</strong>
+                <span>Avg mood</span>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          </section>
 
-     
-    </div>
+          {error ? <div className="mental-error-banner">{error}</div> : null}
+
+          <section className="mental-card-grid">
+            <MoodThisWeekCard moodData={moodData} />
+            <ScheduleProgressCard stats={taskStats} />
+            <DreamProgressCard dataSet={dreamProgress} />
+            <WeeklyInsightCard insight={insight} />
+          </section>
+
+          <section className="mental-quick-actions">
+            <article className="mental-card quick-action-card">
+              <span className="mental-card-kicker">Quick Actions</span>
+              <h3>Keep your momentum going</h3>
+              <div className="quick-action-row">
+                <button type="button" onClick={() => navigate("/mood-tracker")}>
+                  Log today's mood
+                </button>
+                <button type="button" onClick={() => navigate("/my-schedule")}>
+                  Update schedule
+                </button>
+                <button type="button" onClick={() => navigate("/my-dreams")}>
+                  Work on dreams
+                </button>
+              </div>
+            </article>
+          </section>
+        </main>
+      </div>
+    </PageWrapper>
   );
 }
-
 
 export default Dashboard;
