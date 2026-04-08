@@ -1,3 +1,4 @@
+const dns = require("node:dns");
 const http = require("http");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -5,6 +6,23 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const { registerChatSocket } = require("./socket/chatSocket");
 require("dotenv").config();
+
+const dnsServers = (
+  process.env.DNS_SERVERS ||
+  (process.env.NODE_ENV !== "production" ? "8.8.8.8,1.1.1.1" : "")
+)
+  .split(",")
+  .map((server) => server.trim())
+  .filter(Boolean);
+
+if (dnsServers.length) {
+  try {
+    dns.setServers(dnsServers);
+    console.log("Using DNS servers:", dnsServers.join(", "));
+  } catch (error) {
+    console.warn("Unable to apply custom DNS servers:", error.message);
+  }
+}
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
