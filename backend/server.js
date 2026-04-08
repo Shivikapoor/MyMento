@@ -1,12 +1,9 @@
-const dns = require("node:dns");
 const http = require("http");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { Server } = require("socket.io");
 const { registerChatSocket } = require("./socket/chatSocket");
-
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
 require("dotenv").config();
 
 // Routes
@@ -19,23 +16,32 @@ const ratingRoutes = require("./routes/ratingRoutes");
 const wellnessRoutes = require("./routes/wellnessRoutes");
 
 const app = express();
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "https://my-mento.vercel.app",
-  process.env.FRONTEND_URL,
-  ...(process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim())
-    : []),
-].filter(Boolean);
+const allowedOrigins = new Set(
+  [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "https://my-mento.vercel.app",
+    "https://mymento.vercel.app",
+    process.env.FRONTEND_URL,
+    ...(process.env.CORS_ORIGINS
+      ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim())
+      : []),
+  ].filter(Boolean)
+);
+
+function isPreviewOrigin(hostname) {
+  return hostname.endsWith(".vercel.app") || hostname.endsWith(".onrender.com");
+}
 
 function isAllowedOrigin(origin) {
   if (!origin) return true;
-  if (allowedOrigins.includes(origin)) return true;
+  if (allowedOrigins.has(origin)) return true;
 
   try {
-    const hostname = new URL(origin).hostname;
-    if (hostname.endsWith(".vercel.app")) {
+    const { hostname, protocol } = new URL(origin);
+    if ((protocol === "https:" || hostname === "localhost" || hostname === "127.0.0.1") && isPreviewOrigin(hostname)) {
       return true;
     }
   } catch (error) {
@@ -48,7 +54,7 @@ function isAllowedOrigin(origin) {
 const corsOptions = {
   origin(origin, callback) {
     if (isAllowedOrigin(origin)) {
-      return callback(null, true);
+      return callback(null, origin || true);
     }
 
     return callback(new Error(`CORS blocked for origin: ${origin}`));
@@ -56,6 +62,7 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
+  optionsSuccessStatus: 204,
 };
 
 const server = http.createServer(app);
@@ -65,41 +72,25 @@ const io = new Server(server, {
 
 /* ================= MIDDLEWARES ================= */
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  if (isAllowedOrigin(origin)) {
-    res.header("Access-Control-Allow-Origin", origin || "*");
-    res.header("Vary", "Origin");
-    res.header("Access-Control-Allow-Credentials", "true");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-    );
-    res.header(
-      "Access-Control-Allow-Methods",
-      "GET, POST, PUT, DELETE, OPTIONS"
-    );
-  }
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
-  }
-
-  return next();
-});
-
 app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 app.use(express.json());
 
 /* ================= DATABASE ================= */
 
-console.log("Mongo URI:", process.env.MONGO_URI);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected Successfully"))
   .catch((err) => console.log("Mongo Error:", err.message));
+
+mongoose.connection.on("disconnected", () => {
+  console.warn("MongoDB disconnected");
+});
+
+mongoose.connection.on("error", (error) => {
+  console.error("MongoDB connection error:", error);
+});
 
 /* ================= ROUTES ================= */
 

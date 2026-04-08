@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "../config/api";
+import { API_BASE_URL, API_URL } from "../config/api";
 import { setAuth } from "../utils/auth";
 import "../App.css";
 
@@ -48,6 +48,7 @@ function LoginSignup({ initialMode = "login" }) {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [authNotice, setAuthNotice] = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
 
   useEffect(() => {
     setIsLogin(initialMode !== "signup");
@@ -96,13 +97,24 @@ function LoginSignup({ initialMode = "login" }) {
     setResendTimer(0);
   };
 
+  const buildAuthUrl = (path) => `${API_BASE_URL}/auth/${path}`;
+
+  const getNetworkErrorMessage = (error) => {
+    if (error?.name === "TypeError" && error?.message === "Failed to fetch") {
+      return API_URL
+        ? `Unable to reach the backend at ${API_URL}. Please check the deployed backend or CORS settings.`
+        : "Unable to reach the backend through the local dev proxy. Restart the Vite dev server and try again.";
+    }
+
+    return error.message;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setAuthLoading(true);
 
     try {
-      const endpoint = isLogin
-        ? `${API_URL}/api/auth/login`
-        : `${API_URL}/api/auth/signup`;
+      const endpoint = isLogin ? buildAuthUrl("login") : buildAuthUrl("signup");
 
       const payload = isLogin
         ? { email: formData.email, password: formData.password }
@@ -128,12 +140,14 @@ function LoginSignup({ initialMode = "login" }) {
         alert(data.message || "Authentication failed");
       }
     } catch (error) {
-      alert("Server error: " + error.message);
+      alert("Server error: " + getNetworkErrorMessage(error));
+    } finally {
+      setAuthLoading(false);
     }
   };
 
   const sendOtpRequest = async (email) => {
-    const res = await fetch(`${API_URL}/api/auth/send-otp`, {
+    const res = await fetch(buildAuthUrl("send-otp"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
@@ -173,7 +187,7 @@ function LoginSignup({ initialMode = "login" }) {
     setForgotMessage("");
 
     try {
-      const res = await fetch(`${API_URL}/api/auth/verify-otp`, {
+      const res = await fetch(buildAuthUrl("verify-otp"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -204,7 +218,7 @@ function LoginSignup({ initialMode = "login" }) {
     setForgotMessage("");
 
     try {
-      const res = await fetch(`${API_URL}/api/auth/reset-password`, {
+      const res = await fetch(buildAuthUrl("reset-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(forgotData),
@@ -331,8 +345,8 @@ function LoginSignup({ initialMode = "login" }) {
             </div>
           )}
 
-          <button type="submit" className="primary-btn">
-            {isLogin ? "Login" : "Signup"}
+          <button type="submit" className="primary-btn" disabled={authLoading}>
+            {authLoading ? (isLogin ? "Logging in..." : "Signing up...") : isLogin ? "Login" : "Signup"}
           </button>
         </form>
 
