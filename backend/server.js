@@ -103,6 +103,22 @@ mongoose
 
 /* ================= ROUTES ================= */
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    service: "MyMento backend",
+    message: "Server is running",
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.get("/api/mymento", (req, res) => {
   res.json({
     name: "MyMento",
@@ -135,6 +151,20 @@ registerChatSocket(io);
 /* ================= SERVER ================= */
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, "0.0.0.0", () => {
+const HOST = process.env.HOST || "0.0.0.0";
+
+server.listen(PORT, HOST, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+server.on("error", (error) => {
+  console.error("HTTP server error:", error);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled promise rejection:", reason);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught exception:", error);
 });
