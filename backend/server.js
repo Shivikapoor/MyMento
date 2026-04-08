@@ -8,8 +8,9 @@ const { registerChatSocket } = require("./socket/chatSocket");
 require("dotenv").config();
 
 const dnsServers = (
-  process.env.DNS_SERVERS ||
-  (process.env.NODE_ENV !== "production" ? "8.8.8.8,1.1.1.1" : "")
+  process.env.NODE_ENV !== "production"
+    ? process.env.DNS_SERVERS || "8.8.8.8,1.1.1.1"
+    : ""
 )
   .split(",")
   .map((server) => server.trim())
@@ -168,9 +169,8 @@ registerChatSocket(io);
 /* ================= SERVER ================= */
 
 const PORT = process.env.PORT || 5000;
-const HOST = process.env.HOST || "0.0.0.0";
 
-server.listen(PORT, HOST, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
