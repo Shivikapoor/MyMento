@@ -55,7 +55,7 @@ const cards = [
   },
 ];
 
-function Slider() {
+function Slider({ onCtaClick }) {
   const [index, setIndex] = useState(0);
 
   const next = () => {
@@ -72,12 +72,13 @@ function Slider() {
 
   return (
     <section className="slider-shell">
-      <div className="slider-backdrop" />
-      <div className="slider-cloud slider-cloud-left" />
-      <div className="slider-cloud slider-cloud-right" />
-
       <div className="slider-head">
+        <span className="slider-eyebrow">Wellness Insights</span>
         <h2>Situations We Help With</h2>
+        <p>
+          Explore common emotional patterns and gentle support paths in the same
+          calm visual style as your mood insights.
+        </p>
       </div>
 
       <div className="slider-stage">
@@ -107,7 +108,7 @@ function Slider() {
             <span className="slider-kicker">Guided Support</span>
             <h3>{activeCard.title}</h3>
             <p>{activeCard.subtitle}</p>
-            <button type="button" className="slider-cta">
+            <button type="button" className="slider-cta" onClick={onCtaClick}>
               {activeCard.cta}
               <span>&#8250;</span>
             </button>

@@ -48,18 +48,14 @@ function BookSession() {
     });
   };
 
-  // Fetch booked slots
   useEffect(() => {
     if (!formData.date) return;
 
-    fetch(
-      `${API_URL}/api/appointments/booked-slots?date=${formData.date}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
+    fetch(`${API_URL}/api/appointments/booked-slots?date=${formData.date}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -91,12 +87,11 @@ function BookSession() {
 
       if (res.ok) {
         setSuccess(true);
-
-        setFormData({
-          ...formData,
+        setFormData((prev) => ({
+          ...prev,
           date: "",
           time: "",
-        });
+        }));
 
         setTimeout(() => {
           setSuccess(false);
@@ -116,92 +111,141 @@ function BookSession() {
 
   return (
     <PageWrapper>
-      <div className="container">
-        <h1 className="brand-title">
-          <img src="/images/Logo.png" alt="MyMento logo" className="brand-logo brand-logo-title" />
-          <span>MyMento</span>
-        </h1>
-
-        <p className="welcome">
-          Welcome, <strong>{user?.name}</strong>
-        </p>
-
-        <h2>Book a Session</h2>
-
-        <form className="booking-form" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="clientName"
-            value={formData.clientName}
-            disabled
-          />
-
-          <input
-            type="email"
-            name="clientEmail"
-            value={formData.clientEmail}
-            disabled
-          />
-
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            min={today}
-            required
-          />
-
-          <select
-            name="time"
-            value={formData.time}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Time</option>
-
-            {slots.map((slot) => {
-              const slotTime = new Date(`${formData.date}T${slot}:00`);
-              const now = new Date();
-
-              const isPast =
-                formData.date === today && slotTime < now;
-
-              const isBooked = bookedSlots.includes(slot);
-
-              let label = `🟢 ${slot}`;
-
-              if (isBooked) label = `🔴 ${slot} Booked`;
-              else if (isPast) label = `⚫ ${slot} Passed`;
-
-              return (
-                <option
-                  key={slot}
-                  value={slot}
-                  disabled={isBooked || isPast}
-                >
-                  {label}
-                </option>
-              );
-            })}
-          </select>
-
+      <div className="container booking-page">
+        <div className="booking-shell">
           <button
-            type="submit"
-            className="primary-btn"
-            disabled={loading || !formData.time}
+            type="button"
+            className="booking-back-btn"
+            onClick={() => navigate(-1)}
           >
-            {loading ? "Booking..." : "Book Session"}
+            Back
           </button>
-        </form>
 
-        {message && <div className="error-popup">{message}</div>}
+          <section className="booking-card">
+            <div className="booking-copy-panel">
+              <div className="booking-brand brand-inline">
+                <img
+                  src="/images/Logo.png"
+                  alt="MyMento logo"
+                  className="brand-logo brand-logo-title"
+                />
+                <span>MyMento</span>
+              </div>
 
-        {success && (
-          <div className="success-popup">
-            Session booked successfully!
-          </div>
-        )}
+              <span className="booking-eyebrow">Personal session planner</span>
+              <h1>Book a Session</h1>
+              <p>
+                Choose a calm time that works for you. We will automatically
+                block booked and expired slots so booking stays simple.
+              </p>
+
+              <div className="booking-user-chip">
+                <strong>{user?.name}</strong>
+                <span>{user?.email}</span>
+              </div>
+
+              <div className="booking-info-list">
+                <div>
+                  <strong>Live availability</strong>
+                  <span>Only open time slots remain selectable for the chosen day.</span>
+                </div>
+                <div>
+                  <strong>Smooth booking flow</strong>
+                  <span>Your details are already filled in, so you can book faster.</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="booking-form-panel">
+              <div className="booking-form-head">
+                <h2>Session Details</h2>
+                <p>Pick your date and time, then send the booking request.</p>
+              </div>
+
+              <form className="booking-form" onSubmit={handleSubmit}>
+                <label className="booking-field">
+                  <span>Full Name</span>
+                  <input
+                    type="text"
+                    name="clientName"
+                    value={formData.clientName}
+                    disabled
+                  />
+                </label>
+
+                <label className="booking-field">
+                  <span>Email Address</span>
+                  <input
+                    type="email"
+                    name="clientEmail"
+                    value={formData.clientEmail}
+                    disabled
+                  />
+                </label>
+
+                <label className="booking-field">
+                  <span>Select Date</span>
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    min={today}
+                    required
+                  />
+                </label>
+
+                <label className="booking-field">
+                  <span>Select Time</span>
+                  <select
+                    name="time"
+                    value={formData.time}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Time</option>
+
+                    {slots.map((slot) => {
+                      const slotTime = new Date(`${formData.date}T${slot}:00`);
+                      const now = new Date();
+                      const isPast = formData.date === today && slotTime < now;
+                      const isBooked = bookedSlots.includes(slot);
+
+                      let label = `Available • ${slot}`;
+                      if (isBooked) label = `Booked • ${slot}`;
+                      else if (isPast) label = `Passed • ${slot}`;
+
+                      return (
+                        <option
+                          key={slot}
+                          value={slot}
+                          disabled={isBooked || isPast}
+                        >
+                          {label}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </label>
+
+                <button
+                  type="submit"
+                  className="booking-submit-btn"
+                  disabled={loading || !formData.time}
+                >
+                  {loading ? "Booking..." : "Book Session"}
+                </button>
+              </form>
+
+              {message ? <div className="booking-alert error">{message}</div> : null}
+              {success ? (
+                <div className="booking-alert success">
+                  Session booked successfully!
+                </div>
+              ) : null}
+            </div>
+          </section>
+        </div>
       </div>
     </PageWrapper>
   );

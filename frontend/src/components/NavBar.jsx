@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getToken, getUser, logout } from "../utils/auth";
+import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -32,15 +33,18 @@ const Navbar = () => {
           ))}
         </ul>
 
-        <button
-          className="login-btn"
-          onClick={() => {
-            logout();
-            navigate("/");
-          }}
-        >
-          Logout
-        </button>
+        <div className="nav-actions">
+          <ThemeToggle className="theme-toggle" />
+          <button
+            className="login-btn"
+            onClick={() => {
+              logout();
+              navigate("/");
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </nav>
     );
   }
@@ -59,7 +63,10 @@ const Navbar = () => {
         <li><a href="#contact">Contact</a></li>
       </ul>
 
-      <button className="login-btn" onClick={() => navigate("/login")}>Login</button>
+      <div className="nav-actions">
+        <ThemeToggle className="theme-toggle" />
+        <button className="login-btn" onClick={() => navigate("/login")}>Login</button>
+      </div>
     </nav>
   );
 };

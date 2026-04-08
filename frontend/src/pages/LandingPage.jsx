@@ -21,10 +21,10 @@ const lineDots = [
 
 const LandingPage = () => {
   return (
-    <>
+    <div className="landing-page">
       <NavBar />
 
-      <section className="hero">
+      <section className="hero" id="home">
         <div className="hero-text">
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
@@ -74,7 +74,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="slider-section">
+      <section className="slider-section" id="services">
         <Slider />
       </section>
 
@@ -209,7 +209,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="blogs">
+      <section className="blogs" id="about">
         <h2>Explore Mental Wellness</h2>
 
         <div className="blog-cards">
@@ -235,8 +235,10 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <Footer />
-    </>
+      <div id="contact">
+        <Footer />
+      </div>
+    </div>
   );
 };
 

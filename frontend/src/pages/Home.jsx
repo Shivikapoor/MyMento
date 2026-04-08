@@ -8,6 +8,7 @@ import Slider from "../components/Slider";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 import ClientDashboardHub from "../components/ClientDashboardHub";
+import ThemeToggle from "../components/ThemeToggle";
 import "../App.css";
 
 const publicBarHeights = [74, 63, 56, 34, 46, 28];
@@ -121,14 +122,30 @@ function Home() {
       ? { ...card, action: () => navigate("/breathing-calm"), clickable: true }
       : card.title === "Grounding Exercises"
         ? { ...card, action: () => navigate("/grounding-exercise"), clickable: true }
-      : card
+        : card.title === "Empty Your Mind"
+          ? { ...card, action: () => navigate("/empty-your-mind"), clickable: true }
+          : card.title === "Calm Music & Sounds"
+            ? { ...card, action: () => navigate("/calm-music-sounds"), clickable: true }
+            : card.title === "Guided Reset After Work"
+              ? { ...card, action: () => navigate("/guided-reset-after-work"), clickable: true }
+              : card.title === "Overthinking Stopper"
+                ? { ...card, action: () => navigate("/overthinking-stopper"), clickable: true }
+                : card.title === "Mood Booster"
+                  ? { ...card, action: () => navigate("/mood-booster"), clickable: true }
+                  : card.title === "Sleep Help"
+                    ? { ...card, action: () => navigate("/sleep-help"), clickable: true }
+                    : card.title === "I Have 5 Minutes"
+                      ? { ...card, action: () => navigate("/five-minute-reset"), clickable: true }
+                      : card.title === "Daily Mental Reset"
+                        ? { ...card, action: () => navigate("/daily-mental-reset"), clickable: true }
+        : card
   );
 
   const clientQuickActions = [
-    { title: "Book a Session", subtitle: "Reserve time with your counsellor", action: () => navigate("/book-session"), tone: "sunrise" },
-    { title: "My Appointments", subtitle: "Track upcoming and past sessions", action: () => navigate("/my-appointments"), tone: "sky" },
-    { title: "Rate Your Experience", subtitle: "Share how your last session felt", action: () => navigate("/rate-session"), tone: "mint" },
-    { title: "About Counsellor", subtitle: "Read profile, background and approach", action: () => navigate("/profile"), tone: "calm" },
+    { title: "Book a Session", subtitle: "Reserve time with your counsellor", action: () => navigate("/book-session"), tone: "booksession-visual" },
+    { title: "My Appointments", subtitle: "Track upcoming and past sessions", action: () => navigate("/my-appointments"), tone: "appointments-visual" },
+    { title: "Rate Your Experience", subtitle: "Share how your last session felt", action: () => navigate("/rate-session"), tone: "rateexperience-visual" },
+    { title: "About Counsellor", subtitle: "Read profile, background and approach", action: () => navigate("/profile"), tone: "aboutcounsellor-visual" },
   ];
 
   const counsellorQuickActions = [
@@ -141,7 +158,7 @@ function Home() {
     { title: "Burnout Checker", text: "Notice early signs of emotional overload and stress.", cta: "Assess Now", action: () => openPlaceholder("Burnout Checker"), tone: "warm burnout-visual" },
     { title: "Career Guide", text: "Reflect on role fit, goals and work direction.", cta: "Get Advice", action: () => navigate("/career-guide"), tone: "cool career-visual" },
     { title: "Talk Space", text: "Capture what is on your mind without pressure.", cta: "Start Writing", action: () => navigate("/talk-space"), tone: "soft talkspace-visual" },
-    { title: "After Work Relax", text: "Take a quick reset with guided decompression.", cta: "Relax Now", action: () => openPlaceholder("After Work Relax"), tone: "fresh afterwork-visual" },
+    { title: "After Work Relax", text: "Take a quick reset with guided decompression.", cta: "Relax Now", action: () => navigate("/guided-reset-after-work"), tone: "fresh afterwork-visual" },
   ];
 
   const spotlightTools = [
@@ -152,24 +169,28 @@ function Home() {
 
   if (!token) {
     return (
-      <>
+      <div className="public-landing">
         <NavBar />
 
         <section className="hero" id="home">
-          <div className="hero-text">
-            <div className="hero-banner-row">
-              <span className="hero-banner-pill">Daily calm routines</span>
-              <span className="hero-banner-pill">Private reflection space</span>
-              <span className="hero-banner-pill">Stress, sleep, burnout support</span>
-            </div>
+          <div className="hero-mesh-orb hero-mesh-orb-left" aria-hidden="true" />
+          <div className="hero-mesh-orb hero-mesh-orb-right" aria-hidden="true" />
+          <div className="hero-noise" aria-hidden="true" />
+
+          <div className="hero-text hero-left">
+            <span className="hero-kicker">
+              Private. Secure. Professional Support.
+            </span>
             <h1>
               Your Safe Space
               <br />
-              for Mental Well-being
+              to Heal, Grow,
+              <br />
+              and Feel Better.
             </h1>
             <p className="desc">
-              Talk, heal, and grow with professional support. You do not have to
-              go through it alone.
+              Talk to certified counselors, track your mood, and improve your
+              mental well-being all in one calm, supportive place.
             </p>
 
             <div className="hero-buttons">
@@ -186,26 +207,73 @@ function Home() {
                 Explore
               </button>
             </div>
+            <div className="hero-trust-row" aria-label="platform trust indicators">
+              <span className="hero-trust-item">4.8 Rating</span>
+              <span className="hero-trust-item">10,000+ Users</span>
+              <span className="hero-trust-item">Private &amp; Secure</span>
+            </div>
 
             <p className="trust">4.8 rating • 10,000+ users helped</p>
           </div>
 
-          <div className="hero-img">
-            <div className="hero-glow hero-glow-one" />
-            <div className="hero-glow hero-glow-two" />
+          <div className="hero-img hero-right">
+            <div className="hero-glass-card">
+              <div className="hero-mini-card hero-mini-top-left">
+                <div className="hero-mini-avatar">Dr</div>
+                <div className="hero-mini-copy">
+                  <strong>Dr. Aryan</strong>
+                  <span>Counselor</span>
+                </div>
+              </div>
+
+              <div className="hero-mini-card hero-mini-top-right">
+                <div className="hero-mini-avatar hero-mini-avatar-warm">+</div>
+                <div className="hero-mini-copy">
+                  <strong>Mood +12%</strong>
+                  <span>This week</span>
+                </div>
+              </div>
+
+              <div className="hero-mini-card hero-mini-bottom-left">
+                <div className="hero-check-bubble">✓</div>
+                <div className="hero-mini-copy">
+                  <strong>Session Done</strong>
+                  <span>3:00 PM today</span>
+                </div>
+              </div>
+
+              <div className="hero-mini-card hero-mini-bottom-right">
+                <div className="hero-mini-chart" aria-hidden="true">
+                  <span className="bar-1" />
+                  <span className="bar-2" />
+                  <span className="bar-3" />
+                  <span className="bar-4" />
+                  <span className="bar-5" />
+                </div>
+                <div className="hero-mini-copy">
+                  <strong>Progress</strong>
+                  <span>↑ 28%</span>
+                </div>
+              </div>
+
+              <div className="hero-glass-inner" />
+              <div className="hero-illustration-wrap">
+                <img src="/images/Hero_image.png" alt="Illustration of calm mental wellness support" />
+              </div>
+            </div>
+            <div className="float bubble1" />
+            <div className="float bubble2" />
             <div className="float float-soft bubble3" />
             <div className="float float-soft bubble4" />
             <div className="float float-ring bubble5" />
             <div className="float float-ring bubble6" />
-            <img src="/images/therapy.png" alt="therapy" />
-            <div className="float bubble1" />
-            <div className="float bubble2" />
           </div>
+          <div className="hero-wave" aria-hidden="true" />
         </section>
 
         <LazySection minHeight={560} delay={0.05}>
           <section className="slider-section" id="services">
-            <Slider />
+            <Slider onCtaClick={() => navigate("/LoginSignup")} />
           </section>
         </LazySection>
 
@@ -381,7 +449,7 @@ function Home() {
         </LazySection>
 
         <Footer />
-      </>
+      </div>
     );
   }
 
@@ -398,6 +466,7 @@ function Home() {
                 <img src="/images/Logo.png" alt="MyMento logo" className="brand-logo brand-logo-badge" />
                 <span>MyMento Hub</span>
               </div>
+              <ThemeToggle className="hub-theme-toggle" />
               <h1 className="home-title">Welcome, {user?.name}</h1>
               <p className="welcome">
                 Your personalized wellness space for support, clarity and next

@@ -16,12 +16,22 @@ import BreathingCalm from "./pages/BreathingCalm";
 import GroundingExercise from "./pages/GroundingExercise";
 import TalkSpace from "./pages/TalkSpace";
 import CounsellorDashboard from "./pages/CounsellorDashboard";
+import EmptyMind from "./pages/EmptyMind";
+import AmbientPlayer from "./pages/AmbientPlayer";
+import ResetAfterWork from "./pages/ResetAfterWork";
+import OverthinkingStopper from "./pages/OverthinkingStopper";
+import MoodBooster from "./pages/MoodBooster";
+import SleepHelp from "./pages/SleepHelp";
+import FiveMinuteReset from "./pages/FiveMinuteReset";
+import DailyMentalReset from "./pages/DailyMentalReset";
 import PrivateRoute from "./components/PrivateRoute";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
         {/* Home / Dashboard */}
         <Route path="/" element={<Home />} />
 
@@ -81,6 +91,14 @@ function App() {
         <Route path="/ratings" element={<Ratings />} />
         <Route path="/breathing-calm" element={<BreathingCalm />} />
         <Route path="/grounding-exercise" element={<GroundingExercise />} />
+        <Route path="/empty-your-mind" element={<EmptyMind />} />
+        <Route path="/calm-music-sounds" element={<AmbientPlayer />} />
+        <Route path="/guided-reset-after-work" element={<ResetAfterWork />} />
+        <Route path="/overthinking-stopper" element={<OverthinkingStopper />} />
+        <Route path="/mood-booster" element={<MoodBooster />} />
+        <Route path="/sleep-help" element={<SleepHelp />} />
+        <Route path="/five-minute-reset" element={<FiveMinuteReset />} />
+        <Route path="/daily-mental-reset" element={<DailyMentalReset />} />
         <Route
           path="/talk-space"
           element={
@@ -89,8 +107,9 @@ function App() {
             </PrivateRoute>
           }
         />
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
