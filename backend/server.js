@@ -49,7 +49,7 @@ const allowedOrigins = new Set(
   ].filter(Boolean)
 );
 
-function isPreviewOrigin(hostname) {
+function isAllowedPreviewHostname(hostname) {
   return hostname.endsWith(".vercel.app") || hostname.endsWith(".onrender.com");
 }
 
@@ -59,7 +59,13 @@ function isAllowedOrigin(origin) {
 
   try {
     const { hostname, protocol } = new URL(origin);
-    if ((protocol === "https:" || hostname === "localhost" || hostname === "127.0.0.1") && isPreviewOrigin(hostname)) {
+    const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
+
+    if (isLocalhost && (protocol === "http:" || protocol === "https:")) {
+      return true;
+    }
+
+    if (protocol === "https:" && isAllowedPreviewHostname(hostname)) {
       return true;
     }
   } catch (error) {
@@ -125,6 +131,8 @@ app.get("/health", (req, res) => {
     status: "ok",
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
+    database:
+      mongoose.connection.readyState === 1 ? "connected" : "disconnected",
   });
 });
 

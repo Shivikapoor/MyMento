@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_BASE_URL, API_URL } from "../config/api";
+import {
+  API_BASE_URL,
+  API_URL,
+  ensureBackendReady,
+  isNetworkFetchError,
+} from "../config/api";
 import { setAuth } from "../utils/auth";
 import "../App.css";
 
@@ -49,6 +54,7 @@ function LoginSignup({ initialMode = "login" }) {
   const [resendTimer, setResendTimer] = useState(0);
   const [authNotice, setAuthNotice] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
+  const [backendNotice, setBackendNotice] = useState("");
 
   useEffect(() => {
     setIsLogin(initialMode !== "signup");
@@ -80,6 +86,7 @@ function LoginSignup({ initialMode = "login" }) {
     setIsLogin(nextIsLogin);
     setFormData({ name: "", email: "", password: "" });
     setAuthNotice("");
+    setBackendNotice("");
   };
 
   const closeForgotFlow = () => {
@@ -95,14 +102,15 @@ function LoginSignup({ initialMode = "login" }) {
     setForgotError("");
     setForgotLoading(false);
     setResendTimer(0);
+    setBackendNotice("");
   };
 
   const buildAuthUrl = (path) => `${API_BASE_URL}/auth/${path}`;
 
   const getNetworkErrorMessage = (error) => {
-    if (error?.name === "TypeError" && error?.message === "Failed to fetch") {
+    if (isNetworkFetchError(error)) {
       return API_URL
-        ? `Unable to reach the backend at ${API_URL}. Please check the deployed backend or CORS settings.`
+        ? `Unable to reach the backend at ${API_URL}. Check that the Render service is awake and that this Vercel domain is allowed in backend CORS.`
         : "Unable to reach the backend through the local dev proxy. Restart the Vite dev server and try again.";
     }
 
@@ -112,6 +120,7 @@ function LoginSignup({ initialMode = "login" }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setAuthLoading(true);
+    setBackendNotice("");
 
     try {
       const endpoint = isLogin ? buildAuthUrl("login") : buildAuthUrl("signup");
@@ -120,16 +129,39 @@ function LoginSignup({ initialMode = "login" }) {
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      let res;
+
+      try {
+        res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } catch (error) {
+        if (!isNetworkFetchError(error)) {
+          throw error;
+        }
+
+        setBackendNotice("Waking up the live backend. Render can take up to a minute after sleeping.");
+
+        const backendReady = await ensureBackendReady();
+
+        if (!backendReady) {
+          throw error;
+        }
+
+        res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
 
       const data = await readApiResponse(res);
 
       if (res.ok) {
         setAuthNotice("");
+        setBackendNotice("");
         setAuth(data.token, data.user);
         navigate(
           data.user?.role === "counsellor"
@@ -140,6 +172,7 @@ function LoginSignup({ initialMode = "login" }) {
         alert(data.message || "Authentication failed");
       }
     } catch (error) {
+      setBackendNotice("");
       alert("Server error: " + getNetworkErrorMessage(error));
     } finally {
       setAuthLoading(false);
@@ -284,6 +317,7 @@ function LoginSignup({ initialMode = "login" }) {
         <h2>{isLogin ? "Login" : "Sign up"}</h2>
 
         {authNotice ? <p className="auth-notice">{authNotice}</p> : null}
+        {backendNotice ? <p className="auth-notice">{backendNotice}</p> : null}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {!isLogin && (
