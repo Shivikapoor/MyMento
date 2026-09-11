@@ -110,13 +110,11 @@ function GroundingExercise() {
             <button
               type="button"
               className="grounding-back-btn"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/", { state: { restoreScroll: true } })}
+              aria-label="Back to home"
             >
-              Back to Home
+              &larr;
             </button>
-            <div className="grounding-status-pill">
-              {completedCount}/{groundingPrompts.length} stages completed
-            </div>
           </div>
 
           <div className="grounding-copy">

@@ -13,3 +13,28 @@ body,
   min-height: 100%;
   margin: 0;
 }
+
+body {
+  font-family: 'Gothic A1', sans-serif !important;
+  font-weight: 300;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+}
+
+button,
+.button {
+  font-family: 'Gothic A1', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 3px !important;
+}

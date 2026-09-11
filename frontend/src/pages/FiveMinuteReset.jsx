@@ -71,7 +71,7 @@ function FiveMinuteReset() {
       <div className="fivemin-page">
         <section className="tool-shell">
           <div className="tool-topbar">
-            <button type="button" className="tool-back-btn" onClick={() => navigate("/")}>
+            <button type="button" className="tool-back-btn" onClick={() => navigate("/", { state: { restoreScroll: true } })}>
               Back to Home
             </button>
             <div className="tool-status-pill">Quick Reset</div>

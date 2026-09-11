@@ -34,7 +34,7 @@ const Navbar = () => {
         </ul>
 
         <div className="nav-actions">
-          <ThemeToggle className="theme-toggle" />
+          <ThemeToggle />
           <button
             className="login-btn"
             onClick={() => {
@@ -64,7 +64,7 @@ const Navbar = () => {
       </ul>
 
       <div className="nav-actions">
-        <ThemeToggle className="theme-toggle" />
+        <ThemeToggle />
         <button className="login-btn" onClick={() => navigate("/login")}>Login</button>
       </div>
     </nav>

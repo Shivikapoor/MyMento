@@ -25,12 +25,14 @@ import SleepHelp from "./pages/SleepHelp";
 import FiveMinuteReset from "./pages/FiveMinuteReset";
 import DailyMentalReset from "./pages/DailyMentalReset";
 import PrivateRoute from "./components/PrivateRoute";
+import ScrollRestoration from "./components/ScrollRestoration";
 import { ThemeProvider } from "./context/ThemeContext";
 
 function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
+        <ScrollRestoration />
         <Routes>
         {/* Home / Dashboard */}
         <Route path="/" element={<Home />} />

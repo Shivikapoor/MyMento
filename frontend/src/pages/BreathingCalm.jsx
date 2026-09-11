@@ -90,13 +90,11 @@ function BreathingCalm() {
             <button
               type="button"
               className="breathing-back-btn"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/", { state: { restoreScroll: true } })}
+              aria-label="Back to home"
             >
-              Back to Home
+              &larr;
             </button>
-            <div className="breathing-status-pill">
-              {isRunning ? "Session Active" : "Ready to Begin"}
-            </div>
           </div>
 
           <div className="breathing-copy">
@@ -108,18 +106,20 @@ function BreathingCalm() {
             </p>
           </div>
 
-          <div className="breathing-mode-grid">
-            {Object.entries(breathingModes).map(([key, mode]) => (
-              <button
-                key={key}
-                type="button"
-                className={`breathing-mode-card ${modeKey === key ? "active" : ""}`}
-                onClick={() => setModeKey(key)}
-              >
-                <strong>{mode.label}</strong>
-                <span>{mode.subtitle}</span>
-              </button>
-            ))}
+          <div className="breathing-mode-picker">
+            <label htmlFor="breathing-mode">choose a breathing mode</label>
+            <select
+              id="breathing-mode"
+              value={modeKey}
+              onChange={(event) => setModeKey(event.target.value)}
+            >
+              {Object.entries(breathingModes).map(([key, mode]) => (
+                <option key={key} value={key}>
+                  {mode.label.toLowerCase()}
+                </option>
+              ))}
+            </select>
+            <p>{activeMode.subtitle.toLowerCase()}</p>
           </div>
 
           <div className="breathing-practice-card">

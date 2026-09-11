@@ -167,8 +167,43 @@ body {
 }
 
 .dashboard-theme-btn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 999px;
   background: rgba(225, 234, 246, 0.9);
+  color: #264966;
   box-shadow: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.dashboard-theme-btn:hover {
+  transform: translateY(-1px) rotate(8deg);
+  box-shadow: 0 12px 24px rgba(50, 77, 110, 0.14);
+}
+
+.theme-toggle-icon {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.theme-toggle-icon circle {
+  fill: currentColor;
+}
+
+html[data-theme="dark"] .dashboard-theme-btn {
+  background: rgba(25, 39, 60, 0.9);
+  color: #dce8f7;
 }
 
 .mental-page-shell {

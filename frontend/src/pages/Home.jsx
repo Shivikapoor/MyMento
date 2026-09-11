@@ -178,9 +178,7 @@ function Home() {
           <div className="hero-noise" aria-hidden="true" />
 
           <div className="hero-text hero-left">
-            <span className="hero-kicker">
-              Private. Secure. Professional Support.
-            </span>
+           
             <h1>
               Your Safe Space
               <br />

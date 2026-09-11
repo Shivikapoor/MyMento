@@ -50,7 +50,7 @@ function SleepHelp() {
       <div className="sleephelp-page">
         <section className="tool-shell sleephelp-shell">
           <div className="tool-topbar sleephelp-topbar">
-            <button type="button" className="tool-back-btn sleephelp-back-btn" onClick={() => navigate("/")}>
+            <button type="button" className="tool-back-btn sleephelp-back-btn" onClick={() => navigate("/", { state: { restoreScroll: true } })}>
               Back to Home
             </button>
             <div className="tool-status-pill sleephelp-pill">Difficult Night Support</div>
